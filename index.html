@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<!-- 
+  PARA ABRIR NO GITHUB PAGES:
+  1. Faça upload deste arquivo como "index.html" no seu repositório
+  2. Vá em Settings > Pages > Branch: main > pasta: / (root) > Save
+  3. Aguarde ~1 min e acesse: https://SEU_USUARIO.github.io/SEU_REPO
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MeuStudio</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0c0f;--surface:#14141a;--surface2:#1c1c26;--border:#262636;
+  --accent:#ff4d6d;--accent2:#ffbe0b;--accent3:#06d6a0;--purple:#6c63ff;
+  --text:#f0f0f5;--muted:#6b6b80;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;overflow-x:hidden}
+
+/* ── SIDEBAR ── */
+.sidebar{width:235px;min-width:235px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:200;overflow-y:auto}
+.sidebar-logo{padding:20px;border-bottom:1px solid var(--border)}
+.logo-top{font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;margin-bottom:12px}
+.logo-top span{color:var(--accent)}
+.channel-mini{display:flex;align-items:center;gap:10px}
+.channel-mini img{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--accent)}
+.channel-mini .cn{font-size:.82rem;font-weight:600;color:var(--text)}
+.channel-mini .ch{font-size:.72rem;color:var(--muted)}
+.nav{padding:10px 8px;flex:1;display:flex;flex-direction:column;gap:2px}
+.nav-section{font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:12px 10px 4px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:9px;cursor:pointer;font-size:.83rem;font-weight:500;color:var(--muted);transition:all .17s;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:rgba(255,77,109,.13);color:var(--accent);font-weight:600}
+.nav-item .ni{font-size:.95rem;flex-shrink:0;width:18px;text-align:center}
+
+/* ── MAIN ── */
+.main{margin-left:235px;flex:1;padding:28px 32px;min-height:100vh}
+.page{display:none}.page.active{display:block}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:26px;gap:14px;flex-wrap:wrap}
+.page-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.55rem}
+.page-sub{color:var(--muted);font-size:.83rem;margin-top:3px}
+
+/* ── BTNS ── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.83rem;font-weight:600;cursor:pointer;border:none;transition:all .17s}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#e83055;transform:translateY(-1px)}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}.btn-secondary:hover{background:var(--border)}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}.btn-ghost:hover{color:var(--text);border-color:var(--muted)}
+.btn-danger{background:rgba(255,77,109,.1);color:var(--accent);border:1px solid rgba(255,77,109,.22)}.btn-danger:hover{background:var(--accent);color:#fff}
+.btn-yt{background:linear-gradient(135deg,#ff0000,#cc0000);color:#fff}.btn-yt:hover{opacity:.88;transform:translateY(-1px)}
+.btn-sm{padding:5px 11px;font-size:.76rem}
+
+/* ── CARD ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px}
+.card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.98rem;margin-bottom:3px}
+.card-sub{color:var(--muted);font-size:.81rem;margin-bottom:16px}
+
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:24px}
+.stats-row.five{grid-template-columns:repeat(5,1fr)}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:17px;position:relative;overflow:hidden;transition:border-color .2s}
+.stat-card:hover{border-color:var(--accent)}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:13px 13px 0 0}
+.stat-card.c-red::after{background:var(--accent)}.stat-card.c-yellow::after{background:var(--accent2)}
+.stat-card.c-green::after{background:var(--accent3)}.stat-card.c-blue::after{background:var(--purple)}
+.stat-card.c-yt::after{background:#ff0000}
+.stat-lbl{font-size:.71rem;color:var(--muted);font-weight:500;margin-bottom:5px}
+.stat-val{font-family:'Syne',sans-serif;font-size:1.85rem;font-weight:800;line-height:1;margin-bottom:3px}
+.stat-sub{font-size:.7rem;color:var(--muted)}
+.stat-live{display:flex;align-items:center;gap:5px;font-size:.67rem;color:var(--accent3);font-weight:600;margin-top:4px}
+.stat-live::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent3);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── FORM ── */
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:.73rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:8px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.87rem;outline:none;transition:border-color .17s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent)}
+.form-textarea{resize:vertical;min-height:78px}
+.form-select option{background:var(--surface)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(6px);z-index:1000;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:26px;width:100%;max-width:540px;max-height:88vh;overflow-y:auto;animation:mIn .2s ease}
+@keyframes mIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:none}}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal-header h2{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800}
+.modal-close{background:none;border:none;color:var(--muted);font-size:1.25rem;cursor:pointer;padding:2px 6px;border-radius:6px;transition:all .15s}
+.modal-close:hover{color:var(--text);background:var(--surface2)}
+.modal-footer{display:flex;gap:9px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+
+/* ── VIDEO GRID ── */
+.filters-bar{display:flex;gap:7px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.filt{padding:5px 13px;border-radius:20px;font-size:.76rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:none;color:var(--muted);transition:all .17s;font-family:'DM Sans',sans-serif}
+.filt:hover,.filt.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.filt.fv.on{background:var(--purple);border-color:var(--purple)}
+.filt.fl.on{background:var(--accent3);border-color:var(--accent3);color:#0c0c0f}
+.search-box{margin-left:auto;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:6px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.83rem;width:200px;outline:none;transition:border-color .17s}
+.search-box:focus{border-color:var(--accent)}
+.search-box::placeholder{color:var(--muted)}
+
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px}
+.vcard{background:var(--surface);border:1px solid var(--border);border-radius:13px;overflow:hidden;transition:all .2s;cursor:pointer}
+.vcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 8px 28px rgba(255,77,109,.12)}
+.vcard.yt-card{border-color:rgba(255,0,0,.2)}
+.vcard.yt-card:hover{border-color:#ff0000;box-shadow:0 8px 28px rgba(255,0,0,.15)}
+.vthumb{width:100%;aspect-ratio:16/9;background:var(--surface2);position:relative;overflow:hidden}
+.vthumb.sr{aspect-ratio:9/16;max-height:185px}
+.vthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.vthumb .noimg{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.3rem;background:linear-gradient(135deg,var(--surface2),var(--border))}
+.vbadge{position:absolute;top:7px;left:7px;padding:2px 8px;border-radius:16px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.bs{background:var(--accent);color:#fff}.bv{background:var(--purple);color:#fff}.bl{background:var(--accent3);color:#0c0c0f}
+.byt{background:#ff0000;color:#fff}
+.vdur{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.85);padding:2px 6px;border-radius:4px;font-size:.7rem;font-weight:600}
+.vinfo{padding:12px}
+.vtitle{font-weight:600;font-size:.86rem;margin-bottom:5px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.vmeta{display:flex;gap:9px;font-size:.7rem;color:var(--muted);margin-bottom:8px;align-items:center;flex-wrap:wrap}
+.sdot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:3px;vertical-align:middle}
+.sp{background:var(--accent3)}.sd{background:var(--accent2)}.ss{background:var(--purple)}
+.vstats{display:flex;gap:7px;margin-bottom:10px}
+.mst{background:var(--surface2);border-radius:7px;padding:5px 8px;font-size:.7rem;flex:1;text-align:center}
+.mst-v{font-weight:700;font-size:.8rem}.mst-l{color:var(--muted);font-size:.6rem}
+.vact{display:flex;gap:5px}
+.vact .btn{flex:1;justify-content:center;padding:5px 7px;font-size:.74rem}
+
+.empty-state{text-align:center;padding:55px 20px;color:var(--muted)}
+.empty-state .ei{font-size:2.8rem;margin-bottom:12px}
+.empty-state h3{font-family:'Syne',sans-serif;color:var(--text);margin-bottom:5px}
+.empty-state p{font-size:.82rem}
+
+/* THUMB UPLOAD */
+.tdrop{border:2px dashed var(--border);border-radius:11px;padding:22px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.tdrop:hover{border-color:var(--accent);background:rgba(255,77,109,.04)}
+.tdrop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.tdrop .tdi{font-size:1.7rem;margin-bottom:5px}.tdrop .tdt{font-size:.8rem;color:var(--muted)}
+#thumb-prev{width:100%;max-height:140px;object-fit:cover;border-radius:8px;margin-top:10px;display:none}
+
+/* ── YOUTUBE CHANNEL CARD ── */
+.yt-channel-card{
+  background:linear-gradient(135deg,rgba(255,0,0,.08),rgba(255,77,109,.05));
+  border:1px solid rgba(255,0,0,.25);border-radius:16px;padding:22px;margin-bottom:22px;
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+}
+.yt-avatar{width:72px;height:72px;border-radius:50%;border:3px solid #ff0000;object-fit:cover;flex-shrink:0}
+.yt-avatar-ph{width:72px;height:72px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0}
+.yt-info{flex:1;min-width:180px}
+.yt-name{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;margin-bottom:4px}
+.yt-handle{color:var(--muted);font-size:.82rem;margin-bottom:8px}
+.yt-desc{font-size:.8rem;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.yt-meta-row{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap}
+.yt-meta-item{font-size:.76rem;color:var(--muted)}.yt-meta-item strong{color:var(--text)}
+.yt-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* ANALYTICS */
+.analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:17px;margin-bottom:20px}
+.bar-chart{display:flex;flex-direction:column;gap:9px}
+.bar-row{display:flex;align-items:center;gap:9px}
+.bar-lbl{width:75px;font-size:.74rem;color:var(--muted);flex-shrink:0}
+.bar-track{flex:1;background:var(--surface2);border-radius:4px;height:11px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width .8s ease}
+.bar-val{width:45px;text-align:right;font-size:.74rem;font-weight:600}
+.donut-wrap{display:flex;align-items:center;gap:16px}
+.dlegend{display:flex;flex-direction:column;gap:8px}
+.dleg-item{display:flex;align-items:center;gap:7px;font-size:.76rem}
+.dleg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.top-table{width:100%;border-collapse:collapse}
+.top-table th{text-align:left;font-size:.66rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:0 0 10px}
+.top-table td{padding:8px 0;border-top:1px solid var(--border);font-size:.82rem;vertical-align:middle}
+.top-table td:last-child{text-align:right;color:var(--accent3);font-weight:700}
+
+/* NOTES */
+.notes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:13px}
+.note-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color .2s}
+.note-card:hover{border-color:var(--accent2)}
+.note-title{font-weight:700;font-size:.88rem;margin-bottom:6px}
+.note-body{font-size:.8rem;color:var(--muted);line-height:1.55;white-space:pre-wrap}
+.note-foot{display:flex;align-items:center;justify-content:space-between;margin-top:11px}
+.note-date{font-size:.68rem;color:var(--muted)}
+
+/* TOOLS */
+.tools-tabs{display:flex;gap:7px;margin-bottom:22px;flex-wrap:wrap}
+.ttab{padding:7px 15px;border-radius:9px;font-size:.8rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--muted);transition:all .17s;font-family:'DM Sans',sans-serif}
+.ttab:hover{background:var(--surface2);color:var(--text)}
+.ttab.on{background:rgba(255,77,109,.12);border-color:var(--accent);color:var(--accent)}
+.tool-panel{display:none}.tool-panel.on{display:block}
+
+/* IA */
+.ia-result{background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:17px;margin-top:15px;display:none}
+.ia-result.show{display:block}
+.ia-sec{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px;margin-top:17px}
+.ia-sec:first-child{margin-top:0}
+.ia-opt{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:10px 13px;margin-bottom:7px;cursor:pointer;transition:all .17s;font-size:.84rem;line-height:1.5}
+.ia-opt:hover{border-color:var(--accent);background:rgba(255,77,109,.05)}
+.ia-opt.copied{border-color:var(--accent3)}
+.ia-opt-hint{font-size:.69rem;color:var(--muted);margin-top:3px}
+.ia-tag{display:inline-block;background:rgba(108,99,255,.13);color:var(--purple);border:1px solid rgba(108,99,255,.28);border-radius:18px;padding:3px 10px;font-size:.74rem;font-weight:600;margin:3px;cursor:pointer;transition:all .17s}
+.ia-tag:hover{background:var(--purple);color:#fff}
+.ia-dica{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:.81rem}
+.ia-dica:last-child{border:none}
+.ia-dica .arr{color:var(--accent3);flex-shrink:0}
+.loading{display:none;text-align:center;padding:20px}
+.loading.show{display:block}
+.dots{display:inline-flex;gap:5px;align-items:center}
+.dots span{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:dot .9s infinite}
+.dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+.loading p{margin-top:9px;color:var(--muted);font-size:.81rem}
+
+/* HASHTAGS */
+.htags-section{margin-bottom:15px}
+.htags-title{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:7px}
+.htags-wrap{display:flex;flex-wrap:wrap;gap:6px}
+.htag{background:var(--surface2);border:1px solid var(--border);border-radius:18px;padding:4px 12px;font-size:.78rem;font-weight:600;color:var(--accent2);cursor:pointer;transition:all .17s}
+.htag:hover,.htag.copied{background:var(--accent2);color:#0c0c0f;border-color:var(--accent2)}
+
+/* CALENDAR */
+.cal-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:14px}
+.cal-nav-row{display:flex;align-items:center;gap:12px;margin-bottom:9px}
+.cal-month{font-family:'Syne',sans-serif;font-weight:800;font-size:.98rem;flex:1}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-hd{text-align:center;font-size:.63rem;font-weight:700;color:var(--muted);padding:4px;text-transform:uppercase}
+.cal-d{aspect-ratio:1;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.78rem;cursor:pointer;border:1px solid transparent;transition:all .17s;gap:2px}
+.cal-d:hover{background:var(--surface2);border-color:var(--border)}
+.cal-d.today{border-color:var(--accent);color:var(--accent);font-weight:700}
+.cal-d.hev{background:rgba(255,77,109,.1)}
+.cal-d.other{color:var(--muted);opacity:.32}
+.cal-d .cdot{width:4px;height:4px;border-radius:50%;background:var(--accent)}
+.post-list{display:flex;flex-direction:column;gap:7px;margin-top:14px}
+.post-item{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:10px 13px;display:flex;align-items:center;gap:11px;font-size:.82rem}
+.post-badge{background:var(--accent);color:#fff;border-radius:7px;padding:3px 8px;font-size:.7rem;font-weight:700;white-space:nowrap}
+
+/* CHECKLIST */
+.ck-cat{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:9px}
+.ck-cat-h{padding:12px 15px;font-weight:700;font-size:.86rem;background:var(--surface2);display:flex;align-items:center;justify-content:space-between}
+.ck-prog{height:3px;background:var(--border);margin:0 15px}
+.ck-prog-fill{height:100%;background:var(--accent3);border-radius:2px;transition:width .35s}
+.ck-items{padding:9px 15px;display:flex;flex-direction:column;gap:5px}
+.ck-item{display:flex;align-items:center;gap:10px;padding:6px 9px;border-radius:7px;cursor:pointer;transition:background .15s;user-select:none}
+.ck-item:hover{background:var(--surface2)}
+.ck-item input{width:14px;height:14px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;pointer-events:none}
+.ck-item label{cursor:pointer;font-size:.82rem;flex:1;pointer-events:none}
+.ck-item.done label{text-decoration:line-through;color:var(--muted)}
+
+/* CALC */
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.calc-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px}
+.calc-title{font-weight:700;font-size:.88rem;margin-bottom:13px}
+.calc-res{background:var(--surface2);border-radius:9px;padding:12px 15px;margin-top:11px;display:flex;justify-content:space-between;align-items:center}
+.calc-res-v{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--accent3)}
+.calc-res-l{font-size:.72rem;color:var(--muted)}
+
+/* POMODORO */
+.pomo-wrap{max-width:400px;margin:0 auto;text-align:center}
+.pomo-ring{width:180px;height:180px;margin:16px auto;position:relative}
+.pomo-ring svg{transform:rotate(-90deg)}
+.pomo-time{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:2.6rem;font-weight:800}
+.pomo-time.work{color:var(--accent)}.pomo-time.brk{color:var(--accent3)}
+.pomo-lbl{font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.pomo-ctrls{display:flex;gap:9px;justify-content:center;margin:15px 0}
+.pomo-dots{display:flex;gap:7px;justify-content:center;margin-bottom:15px}
+.pdot{width:11px;height:11px;border-radius:50%;background:var(--border);transition:background .3s}
+.pdot.done{background:var(--accent)}
+.pomo-cnt{background:var(--surface2);border-radius:10px;padding:11px 22px;display:inline-block;margin-top:7px}
+.pomo-cnt .n{font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:800;color:var(--accent)}
+.pomo-cnt .l{font-size:.7rem;color:var(--muted)}
+
+/* LOADING SCREEN */
+.yt-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;gap:14px}
+.yt-loading .big-dots span{width:10px;height:10px;background:var(--accent)}
+.yt-loading p{color:var(--muted);font-size:.84rem}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--accent3);border-radius:9px;padding:11px 17px;font-size:.83rem;z-index:9999;display:none;animation:tIn .22s ease;max-width:300px}
+.toast.show{display:block}
+@keyframes tIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+
+/* YT SYNC STATUS */
+.sync-bar{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:20px;font-size:.81rem}
+.sync-bar .sync-icon{font-size:1.1rem}
+.sync-bar .sync-text{flex:1;color:var(--muted)}
+.sync-bar .sync-time{font-size:.72rem;color:var(--muted)}
+
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+/* ── TABLET ── */
+@media(max-width:1000px){
+  .stats-row{grid-template-columns:1fr 1fr}
+  .stats-row.five{grid-template-columns:1fr 1fr 1fr}
+  .analytics-grid{grid-template-columns:1fr}
+  .calc-grid{grid-template-columns:1fr}
+  .cal-layout{grid-template-columns:1fr}
+}
+
+/* ── MOBILE ── */
+@media(max-width:640px){
+  /* Body & layout */
+  body{flex-direction:column;overflow-x:hidden}
+
+  /* Hide desktop sidebar */
+  .sidebar{display:none}
+
+  /* Main fills full screen with bottom padding for nav */
+  .main{margin-left:0;padding:14px 12px 80px;min-height:100vh;width:100%}
+
+  /* Page header stacks */
+  .page-header{flex-direction:column;gap:10px;margin-bottom:18px}
+  .page-header>div:last-child{display:flex;flex-wrap:wrap;gap:7px;width:100%}
+  .page-header .btn{flex:1;justify-content:center;min-width:120px}
+
+  /* Stats grid: 2 cols on mobile */
+  .stats-row{grid-template-columns:1fr 1fr;gap:9px}
+  .stats-row.five{grid-template-columns:1fr 1fr;gap:9px}
+  .stat-val{font-size:1.4rem}
+  .stat-card{padding:12px}
+
+  /* Video grid: 1 col on mobile */
+  .vgrid{grid-template-columns:1fr}
+
+  /* Form rows stack */
+  .form-row{grid-template-columns:1fr}
+
+  /* Analytics */
+  .analytics-grid{grid-template-columns:1fr}
+
+  /* Calc */
+  .calc-grid{grid-template-columns:1fr}
+
+  /* Calendar */
+  .cal-layout{grid-template-columns:1fr}
+
+  /* Tools tabs scroll horizontally */
+  .tools-tabs{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .tools-tabs::-webkit-scrollbar{display:none}
+  .ttab{white-space:nowrap;flex-shrink:0}
+
+  /* Filters bar scroll */
+  .filters-bar{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .filters-bar::-webkit-scrollbar{display:none}
+  .filt{white-space:nowrap;flex-shrink:0}
+  .search-box{width:100%;margin-left:0;margin-top:8px;flex-shrink:0}
+
+  /* Notes grid: 1 col */
+  .notes-grid{grid-template-columns:1fr}
+
+  /* Modal full screen */
+  .modal-overlay{padding:0;align-items:flex-end}
+  .modal{border-radius:18px 18px 0 0;max-height:92vh;width:100%;max-width:100%}
+
+  /* YT channel card stacks */
+  .yt-channel-card{flex-direction:column;text-align:center;gap:12px}
+  .yt-actions{justify-content:center;width:100%}
+  .yt-meta-row{justify-content:center}
+
+  /* Page title smaller */
+  .page-title{font-size:1.25rem}
+
+  /* Pomodoro */
+  .pomo-ring{width:150px;height:150px}
+  .pomo-ring svg{width:150px;height:150px}
+  .pomo-time{font-size:2rem}
+
+  /* Card padding */
+  .card{padding:14px}
+
+  /* Video card actions */
+  .vact{flex-wrap:wrap}
+  .vact .btn{font-size:.72rem;padding:5px 6px}
+
+  /* Sync bar */
+  .sync-bar{flex-wrap:wrap;gap:6px}
+}
+
+/* ── BOTTOM NAV (mobile only) ── */
+.bottom-nav{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;
+  height:62px;
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  z-index:300;
+  padding:0 4px;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.bottom-nav-inner{
+  display:flex;align-items:stretch;height:100%;
+}
+.bn-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;cursor:pointer;border:none;background:none;
+  color:var(--muted);font-family:'DM Sans',sans-serif;
+  font-size:.6rem;font-weight:600;
+  padding:6px 2px;border-radius:10px;
+  transition:all .15s;text-transform:uppercase;letter-spacing:.03em;
+  -webkit-tap-highlight-color:transparent;
+}
+.bn-item .bn-icon{font-size:1.35rem;line-height:1}
+.bn-item.active{color:var(--accent)}
+.bn-item.active .bn-icon{transform:scale(1.15)}
+
+@media(max-width:640px){
+  .bottom-nav{display:block}
+}
+
+/* ── MOBILE TOP BAR ── */
+.mobile-topbar{display:none;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface);border-bottom:1px solid var(--border);border-radius:14px;margin-bottom:16px}
+.mobile-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem}
+.mobile-logo span{color:var(--accent)}
+.mob-avatar-ph{width:34px;height:34px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.mob-avatar-img{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--accent)}
+@media(max-width:640px){.mobile-topbar{display:flex}}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-top">🎬 <span>Meu</span>Studio</div>
+    <div class="channel-mini">
+      <img id="sb-avatar" src="" alt="" style="display:none">
+      <div id="sb-avatar-ph" class="yt-avatar-ph">📺</div>
+      <div>
+        <div class="cn" id="sb-name">Carregando...</div>
+        <div class="ch" id="sb-handle">@wxyinsano8202</div>
+      </div>
+    </div>
+  </div>
+  <div class="nav">
+    <div class="nav-section">Canal</div>
+    <button class="nav-item active" onclick="goPage('canal')"><span class="ni">📺</span><span>Meu Canal</span></button>
+    <button class="nav-item" onclick="goPage('videos')"><span class="ni">🎞️</span><span>Meus Vídeos</span></button>
+    <button class="nav-item" onclick="goPage('analytics')"><span class="ni">📊</span><span>Estatísticas</span></button>
+    <button class="nav-item" onclick="goPage('notes')"><span class="ni">📝</span><span>Anotações</span></button>
+    <div class="nav-section">Ferramentas</div>
+    <button class="nav-item" onclick="goPage('ferramentas');showTool('cal')"><span class="ni">📅</span><span>Calendário</span></button>
+    <button class="nav-item" onclick="goPage('ferramentas');showTool('check')"><span class="ni">✅</span><span>Checklist</span></button>
+    <button class="nav-item" onclick="goPage('ferramentas');showTool('calc')"><span class="ni">📐</span><span>Calculadora</span></button>
+    <button class="nav-item" onclick="goPage('ferramentas');showTool('pomo')"><span class="ni">⏱️</span><span>Pomodoro</span></button>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- MOBILE TOP BAR -->
+<div class="mobile-topbar">
+  <div class="mobile-logo">🎬 <span>Meu</span>Studio</div>
+  <div class="mobile-avatar-wrap">
+    <div id="mob-avatar-ph" class="mob-avatar-ph">📺</div>
+    <img id="mob-avatar" src="" alt="" style="display:none" class="mob-avatar-img">
+  </div>
+</div>
+
+<!-- ══ CANAL (HOME) ══ -->
+<div id="page-canal" class="page active">
+  <div class="page-header">
+    <div><div class="page-title">📺 Meu Canal</div><div class="page-sub">Dados em tempo real do YouTube</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-yt" onclick="syncYT()">🔄 Sincronizar YouTube</button>
+    </div>
+  </div>
+
+  <div id="canal-loading" class="yt-loading">
+    <div class="dots big-dots"><span></span><span></span><span></span></div>
+    <p>Conectando ao YouTube...</p>
+  </div>
+
+  <div id="canal-content" style="display:none">
+    <!-- Channel Card -->
+    <div class="yt-channel-card">
+      <img id="ch-avatar" class="yt-avatar" src="" alt="">
+      <div class="yt-info">
+        <div class="yt-name" id="ch-name">—</div>
+        <div class="yt-handle" id="ch-handle">—</div>
+        <div class="yt-desc" id="ch-desc">—</div>
+        <div class="yt-meta-row">
+          <span class="yt-meta-item">📅 Criado em <strong id="ch-created">—</strong></span>
+          <span class="yt-meta-item">🌍 País: <strong id="ch-country">—</strong></span>
+          <span class="yt-meta-item">🎬 <strong id="ch-vcount">—</strong> vídeos</span>
+        </div>
+      </div>
+      <div class="yt-actions">
+        <a id="ch-link" href="#" target="_blank" class="btn btn-yt">▶ Ver Canal</a>
+        <div id="sync-time" class="sync-time" style="font-size:.72rem;color:var(--muted)"></div>
+      </div>
+    </div>
+
+    <!-- Stats gerais -->
+    <div class="stats-row five">
+      <div class="stat-card c-yt">
+        <div class="stat-lbl">Inscritos</div>
+        <div class="stat-val" id="ch-subs">—</div>
+        <div class="stat-live">AO VIVO</div>
+      </div>
+      <div class="stat-card c-red">
+        <div class="stat-lbl">Visualizações Totais</div>
+        <div class="stat-val" id="ch-views">—</div>
+        <div class="stat-sub">no canal inteiro</div>
+      </div>
+      <div class="stat-card c-yellow">
+        <div class="stat-lbl">Vídeos Publicados</div>
+        <div class="stat-val" id="ch-vids">—</div>
+        <div class="stat-sub">no canal</div>
+      </div>
+      <div class="stat-card c-green">
+        <div class="stat-lbl">Total de Curtidas</div>
+        <div class="stat-val" id="ch-likes">—</div>
+        <div class="stat-sub">somadas</div>
+      </div>
+      <div class="stat-card c-blue">
+        <div class="stat-lbl">Comentários</div>
+        <div class="stat-val" id="ch-cmts">—</div>
+        <div class="stat-sub">no total</div>
+      </div>
+    </div>
+
+    <!-- Top vídeos do canal -->
+    <div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem">🏆 Seus Vídeos no YouTube</div>
+      <button class="btn btn-ghost btn-sm" onclick="syncYTVideos()">🔄 Atualizar vídeos</button>
+    </div>
+    <div class="vgrid" id="yt-vgrid"></div>
+    <div id="yt-vempty" class="empty-state" style="display:none"><div class="ei">📺</div><h3>Nenhum vídeo encontrado</h3><p>Sincronize o YouTube para carregar seus vídeos.</p></div>
+    <div id="yt-load-more" style="text-align:center;margin-top:18px;display:none">
+      <button class="btn btn-ghost" onclick="loadMoreYT()">Carregar mais vídeos</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ VIDEOS (manuais) ══ -->
+<div id="page-videos" class="page">
+  <div class="page-header">
+    <div><div class="page-title">Meus Vídeos</div><div class="page-sub">Vídeos cadastrados manualmente</div></div>
+    <button class="btn btn-primary" onclick="openVModal()">＋ Adicionar</button>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card c-red"><div class="stat-lbl">Total</div><div class="stat-val" id="s-total">0</div></div>
+    <div class="stat-card c-yellow"><div class="stat-lbl">Shorts</div><div class="stat-val" id="s-shorts">0</div></div>
+    <div class="stat-card c-green"><div class="stat-lbl">Publicados</div><div class="stat-val" id="s-pub">0</div></div>
+    <div class="stat-card c-blue"><div class="stat-lbl">Rascunhos</div><div class="stat-val" id="s-draft">0</div></div>
+  </div>
+  <div class="filters-bar">
+    <button class="filt on" data-f="all" onclick="clickFilter(this,'all')">Todos</button>
+    <button class="filt" data-f="short" onclick="clickFilter(this,'short')">📱 Shorts</button>
+    <button class="filt fv" data-f="video" onclick="clickFilter(this,'video')">▶️ Longos</button>
+    <button class="filt fl" data-f="live" onclick="clickFilter(this,'live')">🔴 Lives</button>
+    <button class="filt" data-f="published" onclick="clickFilter(this,'published')">✅ Publicados</button>
+    <button class="filt" data-f="draft" onclick="clickFilter(this,'draft')">📁 Rascunhos</button>
+    <input class="search-box" id="vsearch" placeholder="🔍 Buscar..." oninput="renderVideos()">
+  </div>
+  <div class="vgrid" id="vgrid"></div>
+  <div class="empty-state" id="vempty" style="display:none"><div class="ei">🎬</div><h3>Nenhum vídeo ainda</h3><p>Clique em "Adicionar" para começar.</p></div>
+</div>
+
+<!-- ══ ANALYTICS ══ -->
+<div id="page-analytics" class="page">
+  <div class="page-header"><div><div class="page-title">📊 Estatísticas</div><div class="page-sub">Dados reais do YouTube + manuais</div></div></div>
+  <div class="stats-row">
+    <div class="stat-card c-red"><div class="stat-lbl">Views Totais (YT)</div><div class="stat-val" id="a-views">—</div></div>
+    <div class="stat-card c-yellow"><div class="stat-lbl">Curtidas Totais (YT)</div><div class="stat-val" id="a-likes">—</div></div>
+    <div class="stat-card c-green"><div class="stat-lbl">Comentários (YT)</div><div class="stat-val" id="a-cmts">—</div></div>
+    <div class="stat-card c-blue"><div class="stat-lbl">Média por Vídeo</div><div class="stat-val" id="a-avg">—</div></div>
+  </div>
+  <div class="analytics-grid">
+    <div class="card"><div class="card-title">📊 Views por Tipo</div><div class="bar-chart" id="a-bars" style="margin-top:14px"></div></div>
+    <div class="card"><div class="card-title">🥧 Distribuição</div>
+      <div class="donut-wrap" style="margin-top:14px">
+        <svg id="donut-svg" width="110" height="110" viewBox="0 0 110 110"><circle cx="55" cy="55" r="40" fill="none" stroke="var(--border)" stroke-width="14"/></svg>
+        <div class="dlegend" id="dlegend"></div>
+      </div>
+    </div>
+  </div>
+  <div class="card"><div class="card-title">🏆 Top Vídeos por Views</div>
+    <table class="top-table" style="margin-top:12px">
+      <thead><tr><th>#</th><th>Título</th><th>Tipo</th><th>Views</th><th>Likes</th></tr></thead>
+      <tbody id="a-top"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ NOTAS ══ -->
+<div id="page-notes" class="page">
+  <div class="page-header">
+    <div><div class="page-title">📝 Anotações</div><div class="page-sub">Ideias, roteiros e tarefas</div></div>
+    <button class="btn btn-primary" onclick="openNModal()">＋ Nova</button>
+  </div>
+  <div class="notes-grid" id="ngrid"></div>
+  <div class="empty-state" id="nempty" style="display:none"><div class="ei">📝</div><h3>Nenhuma anotação</h3><p>Anote suas ideias aqui.</p></div>
+</div>
+
+<!-- ══ FERRAMENTAS ══ -->
+<div id="page-ferramentas" class="page">
+  <div class="page-header"><div><div class="page-title">🛠️ Ferramentas</div><div class="page-sub">Tudo para criar conteúdo viral</div></div></div>
+  <div class="tools-tabs">
+    <button class="ttab on" id="ttab-cal" onclick="showTool('cal')">📅 Calendário</button>
+    <button class="ttab" id="ttab-check" onclick="showTool('check')">✅ Checklist</button>
+    <button class="ttab" id="ttab-calc" onclick="showTool('calc')">📐 Calculadora</button>
+    <button class="ttab" id="ttab-pomo" onclick="showTool('pomo')">⏱️ Pomodoro</button>
+
+  <div class="tool-panel on" id="tool-cal">
+    <div class="card">
+      <div class="card-title">📅 Calendário de Postagens</div>
+      <div class="cal-layout">
+        <div>
+          <div class="cal-nav-row">
+            <button class="btn btn-ghost btn-sm" onclick="calPrev()">‹</button>
+            <div class="cal-month" id="cal-label"></div>
+            <button class="btn btn-ghost btn-sm" onclick="calNext()">›</button>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </div>
+        <div>
+          <div style="font-weight:700;margin-bottom:13px;font-size:.86rem">➕ Agendar postagem</div>
+          <div class="form-group"><label class="form-label">Data</label><input type="date" class="form-input" id="cal-date"></div>
+          <div class="form-group"><label class="form-label">Título</label><input class="form-input" id="cal-title" placeholder="Ex: Short sobre produtividade"></div>
+          <div class="form-group"><label class="form-label">Plataforma</label><select class="form-select" id="cal-plat"><option>YouTube Shorts</option><option>YouTube</option><option>TikTok</option><option>Instagram</option></select></div>
+          <button class="btn btn-primary" onclick="addPost()" style="width:100%;justify-content:center">📌 Adicionar</button>
+        </div>
+      </div>
+      <div class="post-list" id="plist"></div>
+    </div>
+  </div>
+
+  <div class="tool-panel" id="tool-check">
+    <div class="card">
+      <div class="card-title">✅ Checklist de Produção</div>
+      <div class="card-sub">Acompanhe cada etapa do seu conteúdo</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:9px">
+          <div style="height:8px;width:150px;background:var(--surface2);border-radius:4px;overflow:hidden"><div id="ck-bar" style="height:100%;background:var(--accent3);border-radius:4px;width:0%;transition:width .4s"></div></div>
+          <span id="ck-pct" style="font-size:.78rem;font-weight:700;color:var(--accent3)">0%</span>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="resetCheck()">🔄 Resetar</button>
+      </div>
+      <div id="ck-container"></div>
+    </div>
+  </div>
+
+  <div class="tool-panel" id="tool-calc">
+    <div class="card">
+      <div class="card-title">📐 Calculadora de Métricas</div>
+      <div class="card-sub">RPM, engajamento, crescimento e metas</div>
+      <div class="calc-grid">
+        <div class="calc-card">
+          <div class="calc-title">💰 RPM</div>
+          <div class="form-group"><label class="form-label">Receita (R$)</label><input class="form-input" type="number" id="c-rev" placeholder="0" oninput="calcRPM()"></div>
+          <div class="form-group"><label class="form-label">Visualizações</label><input class="form-input" type="number" id="c-vws" placeholder="0" oninput="calcRPM()"></div>
+          <div class="calc-res"><div><div class="calc-res-l">RPM</div><div class="calc-res-v" id="c-rpm">R$ 0,00</div></div><div style="font-size:.7rem;color:var(--muted)">por 1k views</div></div>
+        </div>
+        <div class="calc-card">
+          <div class="calc-title">❤️ Engajamento</div>
+          <div class="form-group"><label class="form-label">Curtidas</label><input class="form-input" type="number" id="c-lks" placeholder="0" oninput="calcEng()"></div>
+          <div class="form-group"><label class="form-label">Comentários</label><input class="form-input" type="number" id="c-cms" placeholder="0" oninput="calcEng()"></div>
+          <div class="form-group"><label class="form-label">Views</label><input class="form-input" type="number" id="c-evws" placeholder="0" oninput="calcEng()"></div>
+          <div class="calc-res"><div><div class="calc-res-l">Taxa</div><div class="calc-res-v" id="c-eng">0,00%</div></div></div>
+        </div>
+        <div class="calc-card">
+          <div class="calc-title">📈 Projeção de Crescimento</div>
+          <div class="form-group"><label class="form-label">Inscritos atuais</label><input class="form-input" type="number" id="c-subs" placeholder="0" oninput="calcGrow()"></div>
+          <div class="form-group"><label class="form-label">Crescimento/semana (%)</label><input class="form-input" type="number" id="c-gr" placeholder="5" oninput="calcGrow()"></div>
+          <div class="calc-res"><div><div class="calc-res-l">Em 3 meses</div><div class="calc-res-v" id="c-proj">0</div></div><div style="font-size:.7rem;color:var(--muted)">inscritos</div></div>
+        </div>
+        <div class="calc-card">
+          <div class="calc-title">🎯 Meta de Views</div>
+          <div class="form-group"><label class="form-label">Meta de views</label><input class="form-input" type="number" id="c-goal" placeholder="100000" oninput="calcGoal()"></div>
+          <div class="form-group"><label class="form-label">Média por vídeo</label><input class="form-input" type="number" id="c-avgv" placeholder="0" oninput="calcGoal()"></div>
+          <div class="calc-res"><div><div class="calc-res-l">Vídeos necessários</div><div class="calc-res-v" id="c-need">—</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tool-panel" id="tool-pomo">
+    <div class="card" style="max-width:440px;margin:0 auto">
+      <div class="card-title" style="text-align:center">⏱️ Timer de Gravação</div>
+      <div class="card-sub" style="text-align:center">Foco durante a gravação e edição</div>
+      <div class="pomo-wrap">
+        <div class="form-row" style="max-width:270px;margin:0 auto 10px">
+          <div class="form-group"><label class="form-label">Foco (min)</label><input class="form-input" type="number" id="p-work" value="25" min="1" max="60" onchange="pomoReset()"></div>
+          <div class="form-group"><label class="form-label">Pausa (min)</label><input class="form-input" type="number" id="p-brk" value="5" min="1" max="30" onchange="pomoReset()"></div>
+        </div>
+        <div class="pomo-lbl" id="p-lbl">🎬 FOCO — GRAVANDO</div>
+        <div class="pomo-ring">
+          <svg width="180" height="180" viewBox="0 0 180 180">
+            <circle cx="90" cy="90" r="75" fill="none" stroke="var(--border)" stroke-width="11"/>
+            <circle id="p-ring" cx="90" cy="90" r="75" fill="none" stroke="var(--accent)" stroke-width="11" stroke-dasharray="471.24" stroke-dashoffset="0" stroke-linecap="round"/>
+          </svg>
+          <div class="pomo-time work" id="p-disp">25:00</div>
+        </div>
+        <div class="pomo-dots" id="p-dots"></div>
+        <div class="pomo-ctrls">
+          <button class="btn btn-primary" id="p-btn" onclick="pomoToggle()" style="min-width:125px;justify-content:center;padding:10px 20px">▶ Iniciar</button>
+          <button class="btn btn-ghost" onclick="pomoReset()">↺ Resetar</button>
+        </div>
+        <div class="pomo-cnt"><div class="n" id="p-cnt">0</div><div class="l">sessões hoje</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+</main>
+
+<!-- MODAL VÍDEO -->
+<div class="modal-overlay" id="modal-v">
+  <div class="modal">
+    <div class="modal-header"><h2 id="mv-title">➕ Novo Vídeo</h2><button class="modal-close" onclick="closeM('modal-v')">✕</button></div>
+    <div class="form-group"><label class="form-label">Título *</label><input class="form-input" id="v-title" placeholder="Título do vídeo..."></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Tipo</label><select class="form-select" id="v-type"><option value="short">📱 Short</option><option value="video" selected>▶️ Vídeo Longo</option><option value="live">🔴 Live</option></select></div>
+      <div class="form-group"><label class="form-label">Status</label><select class="form-select" id="v-status"><option value="published">✅ Publicado</option><option value="draft" selected>📁 Rascunho</option><option value="scheduled">🕐 Agendado</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Duração</label><input class="form-input" id="v-dur" placeholder="Ex: 12:34"></div>
+      <div class="form-group"><label class="form-label">Data</label><input class="form-input" type="date" id="v-date"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Views</label><input class="form-input" type="number" id="v-views" placeholder="0" min="0"></div>
+      <div class="form-group"><label class="form-label">Curtidas</label><input class="form-input" type="number" id="v-likes" placeholder="0" min="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Comentários</label><input class="form-input" type="number" id="v-cmts" placeholder="0" min="0"></div>
+      <div class="form-group"><label class="form-label">Link</label><input class="form-input" id="v-link" placeholder="https://..."></div>
+    </div>
+    <div class="form-group"><label class="form-label">Descrição</label><textarea class="form-textarea" id="v-desc" placeholder="Notas sobre o vídeo..."></textarea></div>
+    <div class="form-group">
+      <label class="form-label">Thumbnail</label>
+      <div class="tdrop" id="tdrop">
+        <input type="file" accept="image/*" id="v-file" onchange="handleFile(this)">
+        <div class="tdi">🖼️</div><div class="tdt">Clique ou arraste uma imagem</div>
+      </div>
+      <img id="thumb-prev" src="" alt="preview">
+    </div>
+    <div class="form-group"><label class="form-label">URL da Thumbnail</label><input class="form-input" id="v-turl" placeholder="https://..."></div>
+    <input type="hidden" id="v-tdata">
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeM('modal-v')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveVideo()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NOTA -->
+<div class="modal-overlay" id="modal-n">
+  <div class="modal">
+    <div class="modal-header"><h2>📝 Nova Anotação</h2><button class="modal-close" onclick="closeM('modal-n')">✕</button></div>
+    <div class="form-group"><label class="form-label">Título</label><input class="form-input" id="n-title" placeholder="Título..."></div>
+    <div class="form-group"><label class="form-label">Conteúdo</label><textarea class="form-textarea" id="n-body" placeholder="Escreva suas ideias..." style="min-height:120px"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeM('modal-n')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveNote()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV (mobile) -->
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <button class="bn-item active" id="bn-canal" onclick="goPage('canal')">
+      <span class="bn-icon">📺</span><span>Canal</span>
+    </button>
+    <button class="bn-item" id="bn-videos" onclick="goPage('videos')">
+      <span class="bn-icon">🎞️</span><span>Vídeos</span>
+    </button>
+    <button class="bn-item" id="bn-analytics" onclick="goPage('analytics')">
+      <span class="bn-icon">📊</span><span>Stats</span>
+    </button>
+    <button class="bn-item" id="bn-notes" onclick="goPage('notes')">
+      <span class="bn-icon">📝</span><span>Notas</span>
+    </button>
+    <button class="bn-item" id="bn-ferramentas" onclick="goPage('ferramentas')">
+      <span class="bn-icon">🛠️</span><span>Tools</span>
+    </button>
+  </div>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+// ═══════════════════════ CONFIG ═══════════════════════
+var YT_API_KEY = 'AIzaSyCDy9KeUbIV9MIeqtLt-29tkr3O-OqwW6k';
+var YT_HANDLE      = 'wxyinsano8202';
+var YT_CHANNEL_ID  = '';
+// Limpa cache se o canal salvo não for o correto
+(function(){
+  var cachedCh = JSON.parse(localStorage.getItem('ms_ytch') || 'null');
+  if (cachedCh) {
+    var savedHandle = ((cachedCh.snippet||{}).customUrl||'').replace('@','').toLowerCase();
+    if (savedHandle && savedHandle !== YT_HANDLE.toLowerCase()) {
+      localStorage.removeItem('ms_ytch');
+      localStorage.removeItem('ms_ytchid');
+      localStorage.removeItem('ms_ytvids');
+    }
+  }
+})();
+var YT_BASE        = 'https://www.googleapis.com/youtube/v3';
+var ytChannelId    = localStorage.getItem('ms_ytchid') || '';
+var ytPageToken    = '';
+var ytVideosCache  = JSON.parse(localStorage.getItem('ms_ytvids') || '[]');
+var ytChannelCache = JSON.parse(localStorage.getItem('ms_ytch')   || 'null');
+
+// ═══════════════════════ DATA ══════════════════════════
+var videos  = JSON.parse(localStorage.getItem('ms_v') || '[]');
+var notes   = JSON.parse(localStorage.getItem('ms_n') || '[]');
+var posts   = JSON.parse(localStorage.getItem('ms_p') || '[]');
+var ckSt    = JSON.parse(localStorage.getItem('ms_c') || '{}');
+var curFilt = 'all';
+var editId  = null;
+
+function save() {
+  localStorage.setItem('ms_v',     JSON.stringify(videos));
+  localStorage.setItem('ms_n',     JSON.stringify(notes));
+  localStorage.setItem('ms_p',     JSON.stringify(posts));
+  localStorage.setItem('ms_c',     JSON.stringify(ckSt));
+  localStorage.setItem('ms_ytvids',JSON.stringify(ytVideosCache));
+  if (ytChannelCache) localStorage.setItem('ms_ytch', JSON.stringify(ytChannelCache));
+  if (ytChannelId)    localStorage.setItem('ms_ytchid', ytChannelId);
+}
+
+// ═══════════════════════ UTILS ════════════════════════
+function uid()  { return Date.now().toString(36)+Math.random().toString(36).slice(2,5); }
+function fmt(n) {
+  if (n === undefined || n === null || n === '') return '—';
+  n = Number(n);
+  if (isNaN(n)) return '—';
+  if (n >= 1e9) return (n/1e9).toFixed(2)+'B';
+  if (n >= 1e6) return (n/1e6).toFixed(2)+'M';
+  if (n >= 1000) return (n/1000).toFixed(1)+'K';
+  return n.toLocaleString('pt-BR');
+}
+function fmtDate(d) {
+  if (!d) return '';
+  var p = d.split('-');
+  return p[2]+'/'+p[1]+'/'+p[0];
+}
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function toast(msg, color) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.borderLeftColor = color||'var(--accent3)';
+  t.classList.add('show');
+  clearTimeout(t._tid);
+  t._tid = setTimeout(function(){ t.classList.remove('show'); }, 2600);
+}
+function closeM(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(function(o){
+  o.addEventListener('click', function(e){ if(e.target===o) o.classList.remove('open'); });
+});
+
+// ═══════════════════════ NAV ══════════════════════════
+function goPage(id) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+  document.querySelectorAll('.bn-item').forEach(function(n){ n.classList.remove('active'); });
+  document.getElementById('page-'+id).classList.add('active');
+  var bn = document.getElementById('bn-'+id);
+  if (bn) bn.classList.add('active');
+  if (id==='analytics') renderAnalytics();
+  if (id==='notes')     renderNotes();
+  if (id==='videos')    renderVideos();
+  // Scroll to top on page change (mobile)
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function showTool(id) {
+  document.querySelectorAll('.tool-panel').forEach(function(p){ p.classList.remove('on'); });
+  document.querySelectorAll('.ttab').forEach(function(t){ t.classList.remove('on'); });
+  document.getElementById('tool-'+id).classList.add('on');
+  var tab=document.getElementById('ttab-'+id);
+  if (tab) tab.classList.add('on');
+}
+
+// ═══════════════════════ YOUTUBE API ══════════════════
+async function ytFetch(endpoint, params) {
+  var url = YT_BASE + endpoint + '?key=' + YT_API_KEY;
+  Object.keys(params).forEach(function(k){ url += '&' + k + '=' + encodeURIComponent(params[k]); });
+  var r = await fetch(url);
+  if (!r.ok) throw new Error('YouTube API error: ' + r.status);
+  return r.json();
+}
+
+async function syncYT() {
+  toast('🔄 Sincronizando YouTube...', 'var(--accent2)');
+  document.getElementById('canal-loading').style.display = 'flex';
+  document.getElementById('canal-content').style.display = 'none';
+  try {
+    // 1. Get channel by handle — always use handle to avoid wrong channel cache
+    var channelParams = { part: 'snippet,statistics,contentDetails,brandingSettings' };
+    channelParams.forHandle = '@' + YT_HANDLE;
+    var data = await ytFetch('/channels', channelParams);
+    if (!data.items || !data.items.length) throw new Error('Canal não encontrado');
+    var ch = data.items[0];
+    ytChannelId = ch.id;
+    ytChannelCache = ch;
+
+    // 2. Render channel info
+    renderChannel(ch);
+
+    // 3. Load videos
+    await syncYTVideos();
+    toast('✅ YouTube sincronizado!');
+  } catch(e) {
+    document.getElementById('canal-loading').style.display = 'none';
+    document.getElementById('canal-content').style.display = 'block';
+    toast('❌ Erro: '+e.message, 'var(--accent)');
+    console.error(e);
+  }
+}
+
+function renderChannel(ch) {
+  var sn  = ch.snippet      || {};
+  var st  = ch.statistics   || {};
+  var br  = (ch.brandingSettings||{}).channel || {};
+
+  // sidebar mini
+  var sbAvatar = document.getElementById('sb-avatar');
+  var sbAvatarPh = document.getElementById('sb-avatar-ph');
+  var thumb = (sn.thumbnails||{});
+  var avatarUrl = (thumb.high||thumb.medium||thumb.default||{}).url || '';
+  if (avatarUrl) {
+    sbAvatar.src = avatarUrl; sbAvatar.style.display = 'block';
+    sbAvatarPh.style.display = 'none';
+    document.getElementById('ch-avatar').src = avatarUrl;
+  }
+  document.getElementById('sb-name').textContent = sn.title || 'Canal';
+  // Mobile avatar
+  if (avatarUrl) {
+    var mobAv = document.getElementById('mob-avatar');
+    var mobPh = document.getElementById('mob-avatar-ph');
+    if (mobAv) { mobAv.src = avatarUrl; mobAv.style.display = 'block'; }
+    if (mobPh) mobPh.style.display = 'none';
+  }
+
+  // channel card
+  document.getElementById('ch-name').textContent    = sn.title || '—';
+  document.getElementById('ch-handle').textContent  = '@' + (sn.customUrl||YT_HANDLE).replace('@','');
+  document.getElementById('ch-desc').textContent    = sn.description || 'Sem descrição.';
+  document.getElementById('ch-created').textContent = sn.publishedAt ? new Date(sn.publishedAt).toLocaleDateString('pt-BR') : '—';
+  document.getElementById('ch-country').textContent = sn.country || 'N/A';
+  document.getElementById('ch-vcount').textContent  = fmt(st.videoCount);
+  var link = 'https://youtube.com/channel/'+ch.id;
+  document.getElementById('ch-link').href = link;
+  document.getElementById('sync-time').textContent  = 'Atualizado às ' + new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+
+  // big stats
+  document.getElementById('ch-subs').textContent  = st.hiddenSubscriberCount ? 'Ocultos' : fmt(st.subscriberCount);
+  document.getElementById('ch-views').textContent = fmt(st.viewCount);
+  document.getElementById('ch-vids').textContent  = fmt(st.videoCount);
+
+  document.getElementById('canal-loading').style.display = 'none';
+  document.getElementById('canal-content').style.display = 'block';
+  save();
+}
+
+async function syncYTVideos() {
+  if (!ytChannelId) { await syncYT(); return; }
+  toast('📹 Carregando vídeos...', 'var(--accent2)');
+  ytVideosCache = [];
+  ytPageToken   = '';
+  await loadYTVideoPage(true);
+}
+
+async function loadMoreYT() {
+  if (!ytPageToken) return;
+  await loadYTVideoPage(false);
+}
+
+async function loadYTVideoPage(reset) {
+  try {
+    // Get uploads playlist id first if needed
+    var uploadsId = localStorage.getItem('ms_uploads_id');
+    if (!uploadsId) {
+      var chData = await ytFetch('/channels', { part:'contentDetails', id: ytChannelId });
+      uploadsId = chData.items[0].contentDetails.relatedPlaylists.uploads;
+      localStorage.setItem('ms_uploads_id', uploadsId);
+    }
+
+    // Get video list
+    var params = { part:'snippet', playlistId: uploadsId, maxResults: 50 };
+    if (ytPageToken) params.pageToken = ytPageToken;
+    var listData = await ytFetch('/playlistItems', params);
+
+    var videoIds = (listData.items||[]).map(function(i){ return i.snippet.resourceId.videoId; }).join(',');
+    ytPageToken  = listData.nextPageToken || '';
+
+    if (!videoIds) { renderYTVideos(); return; }
+
+    // Get video statistics
+    var statsData = await ytFetch('/videos', {
+      part: 'statistics,contentDetails,snippet',
+      id:   videoIds
+    });
+
+    var vmap = {};
+    (statsData.items||[]).forEach(function(v){ vmap[v.id] = v; });
+
+    var enriched = (listData.items||[]).map(function(item) {
+      var sn  = item.snippet || {};
+      var vid = vmap[sn.resourceId.videoId] || {};
+      var st  = vid.statistics     || {};
+      var cd  = vid.contentDetails || {};
+      var vsn = vid.snippet         || sn;
+
+      var dur = cd.duration || '';
+      var durFmt = parseDuration(dur);
+      var isShort = (dur && isShortDuration(dur)) || (vsn.title||'').toLowerCase().includes('#short');
+
+      var th = (vsn.thumbnails||sn.thumbnails||{});
+      var thumb = (th.maxres||th.high||th.medium||th.default||{}).url || '';
+
+      return {
+        id:       sn.resourceId.videoId,
+        ytId:     sn.resourceId.videoId,
+        title:    vsn.title || sn.title || '(sem título)',
+        type:     isShort ? 'short' : 'video',
+        status:   'published',
+        date:     (vsn.publishedAt||sn.publishedAt||'').split('T')[0],
+        dur:      durFmt,
+        views:    parseInt(st.viewCount)    || 0,
+        likes:    parseInt(st.likeCount)    || 0,
+        cmts:     parseInt(st.commentCount) || 0,
+        favs:     parseInt(st.favoriteCount)|| 0,
+        link:     'https://www.youtube.com/watch?v=' + sn.resourceId.videoId,
+        turl:     thumb,
+        tdata:    '',
+        desc:     vsn.description || sn.description || '',
+        isYT:     true,
+      };
+    });
+
+    ytVideosCache = reset ? enriched : ytVideosCache.concat(enriched);
+
+    // Compute totals
+    var totalLikes = ytVideosCache.reduce(function(a,v){ return a+(v.likes||0); }, 0);
+    var totalCmts  = ytVideosCache.reduce(function(a,v){ return a+(v.cmts||0); }, 0);
+    document.getElementById('ch-likes').textContent = fmt(totalLikes);
+    document.getElementById('ch-cmts').textContent  = fmt(totalCmts);
+
+    document.getElementById('yt-load-more').style.display = ytPageToken ? 'block' : 'none';
+    save();
+    renderYTVideos();
+  } catch(e) {
+    toast('❌ Erro ao carregar vídeos: '+e.message, 'var(--accent)');
+    console.error(e);
+  }
+}
+
+function parseDuration(dur) {
+  if (!dur) return '';
+  var m = dur.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!m) return '';
+  var h = parseInt(m[1]||0), min = parseInt(m[2]||0), s = parseInt(m[3]||0);
+  if (h) return h+':'+String(min).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  return min+':'+String(s).padStart(2,'0');
+}
+
+function isShortDuration(dur) {
+  var m = dur.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!m) return false;
+  var total = (parseInt(m[1]||0)*3600)+(parseInt(m[2]||0)*60)+(parseInt(m[3]||0));
+  return total <= 60;
+}
+
+function renderYTVideos() {
+  var grid  = document.getElementById('yt-vgrid');
+  var empty = document.getElementById('yt-vempty');
+  if (!ytVideosCache.length) { grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display = 'none';
+
+  var TL = {short:'Short',video:'Vídeo',live:'Live'};
+  grid.innerHTML = ytVideosCache.map(function(v) {
+    var src = v.tdata || v.turl || '';
+    var th  = src ? '<img src="'+src+'" alt="" onerror="this.style.display=\'none\'">'
+                  : '<div class="noimg">▶️</div>';
+    return '<div class="vcard yt-card">'
+      +'<div class="vthumb'+(v.type==='short'?' sr':'')+'">'
+      +th
+      +'<span class="vbadge byt">YT</span>'
+      +(v.dur?'<span class="vdur">'+esc(v.dur)+'</span>':'')
+      +'</div>'
+      +'<div class="vinfo">'
+      +'<div class="vtitle">'+esc(v.title)+'</div>'
+      +'<div class="vmeta"><span>'+TL[v.type]+'</span>'+(v.date?'<span>📅 '+fmtDate(v.date)+'</span>':'')+'</div>'
+      +'<div class="vstats">'
+      +'<div class="mst"><div class="mst-v">'+fmt(v.views)+'</div><div class="mst-l">Views</div></div>'
+      +'<div class="mst"><div class="mst-v">'+fmt(v.likes)+'</div><div class="mst-l">Likes</div></div>'
+      +'<div class="mst"><div class="mst-v">'+fmt(v.cmts)+'</div><div class="mst-l">Coment.</div></div>'
+      +'</div>'
+      +'<div class="vact">'
+      +'<a href="'+esc(v.link)+'" target="_blank" class="btn btn-yt" style="flex:1;justify-content:center;padding:5px 7px;font-size:.74rem;text-decoration:none">▶ Assistir</a>'
+      +'<button class="btn btn-ghost" style="flex:1;justify-content:center;padding:5px 7px;font-size:.74rem" onclick="copyVidTitle(\''+v.id+'\')">📋 Copiar título</button>'
+      +'</div>'
+      +'</div></div>';
+  }).join('');
+}
+
+function copyVidTitle(id) {
+  var v = ytVideosCache.find(function(x){ return x.id===id; });
+  if (!v) return;
+  navigator.clipboard.writeText(v.title).then(function(){ toast('📋 Título copiado!'); });
+}
+
+// ═══════════════════════ MANUAL VIDEOS ════════════════
+function setFilter(f) { curFilt=f; renderVideos(); }
+function clickFilter(btn, f) {
+  curFilt=f;
+  document.querySelectorAll('.filt').forEach(function(b){ b.classList.remove('on'); });
+  btn.classList.add('on');
+  renderVideos();
+}
+
+function renderVideos() {
+  var q = (document.getElementById('vsearch').value||'').toLowerCase();
+  document.getElementById('s-total').textContent  = videos.length;
+  document.getElementById('s-shorts').textContent = videos.filter(function(v){ return v.type==='short'; }).length;
+  document.getElementById('s-pub').textContent    = videos.filter(function(v){ return v.status==='published'; }).length;
+  document.getElementById('s-draft').textContent  = videos.filter(function(v){ return v.status==='draft'; }).length;
+
+  var list = videos.filter(function(v){
+    var mf = curFilt==='all'||v.type===curFilt||v.status===curFilt;
+    var ms = !q||(v.title||'').toLowerCase().includes(q)||(v.desc||'').toLowerCase().includes(q);
+    return mf&&ms;
+  });
+
+  var grid  = document.getElementById('vgrid');
+  var empty = document.getElementById('vempty');
+  if (!list.length) { grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+
+  var TL={short:'Short',video:'Vídeo',live:'Live'};
+  var SL={published:'Publicado',draft:'Rascunho',scheduled:'Agendado'};
+  var SC={published:'sp',draft:'sd',scheduled:'ss'};
+  var BC={short:'bs',video:'bv',live:'bl'};
+
+  grid.innerHTML = list.map(function(v) {
+    var src = v.tdata||v.turl||'';
+    var th  = src ? '<img src="'+src+'" alt="" onerror="this.style.display=\'none\'">'
+                  : '<div class="noimg">'+(v.type==='short'?'📱':v.type==='live'?'🔴':'🎬')+'</div>';
+    var lnk = v.link ? '<a href="'+esc(v.link)+'" target="_blank" class="btn btn-secondary" onclick="event.stopPropagation()" style="flex:1;justify-content:center;padding:5px 7px;font-size:.74rem;text-decoration:none">🔗 Ver</a>' : '';
+    return '<div class="vcard" onclick="editVideo(\''+v.id+'\')">'
+      +'<div class="vthumb'+(v.type==='short'?' sr':'')+'">'
+      +th
+      +'<span class="vbadge '+BC[v.type]+'">'+TL[v.type]+'</span>'
+      +(v.dur?'<span class="vdur">'+esc(v.dur)+'</span>':'')
+      +'</div>'
+      +'<div class="vinfo">'
+      +'<div class="vtitle">'+esc(v.title)+'</div>'
+      +'<div class="vmeta"><span><span class="sdot '+SC[v.status]+'"></span>'+SL[v.status]+'</span>'+(v.date?'<span>📅 '+fmtDate(v.date)+'</span>':'')+'</div>'
+      +'<div class="vstats">'
+      +'<div class="mst"><div class="mst-v">'+fmt(v.views)+'</div><div class="mst-l">Views</div></div>'
+      +'<div class="mst"><div class="mst-v">'+fmt(v.likes)+'</div><div class="mst-l">Likes</div></div>'
+      +'<div class="mst"><div class="mst-v">'+fmt(v.cmts)+'</div><div class="mst-l">Coment.</div></div>'
+      +'</div>'
+      +'<div class="vact">'+lnk
+      +'<button class="btn btn-ghost" onclick="event.stopPropagation();editVideo(\''+v.id+'\')" style="flex:1;justify-content:center;padding:5px 7px;font-size:.74rem">✏️ Editar</button>'
+      +'<button class="btn btn-danger" onclick="event.stopPropagation();delVideo(\''+v.id+'\')" style="padding:5px 9px;font-size:.74rem">🗑️</button>'
+      +'</div></div></div>';
+  }).join('');
+}
+
+function openVModal() {
+  editId=null;
+  document.getElementById('mv-title').textContent='➕ Novo Vídeo';
+  ['v-title','v-dur','v-link','v-desc','v-turl','v-tdata'].forEach(function(id){ document.getElementById(id).value=''; });
+  document.getElementById('v-type').value='video';
+  document.getElementById('v-status').value='draft';
+  document.getElementById('v-date').value='';
+  document.getElementById('v-views').value='';
+  document.getElementById('v-likes').value='';
+  document.getElementById('v-cmts').value='';
+  document.getElementById('thumb-prev').style.display='none';
+  document.getElementById('modal-v').classList.add('open');
+}
+
+function editVideo(id) {
+  var v=videos.find(function(x){ return x.id===id; });
+  if(!v) return;
+  editId=id;
+  document.getElementById('mv-title').textContent='✏️ Editar Vídeo';
+  document.getElementById('v-title').value =v.title ||'';
+  document.getElementById('v-type').value  =v.type  ||'video';
+  document.getElementById('v-status').value=v.status||'draft';
+  document.getElementById('v-dur').value   =v.dur   ||'';
+  document.getElementById('v-date').value  =v.date  ||'';
+  document.getElementById('v-views').value =v.views ||'';
+  document.getElementById('v-likes').value =v.likes ||'';
+  document.getElementById('v-cmts').value  =v.cmts  ||'';
+  document.getElementById('v-link').value  =v.link  ||'';
+  document.getElementById('v-desc').value  =v.desc  ||'';
+  document.getElementById('v-turl').value  =v.turl  ||'';
+  document.getElementById('v-tdata').value =v.tdata ||'';
+  var prev=document.getElementById('thumb-prev');
+  var src=v.tdata||v.turl;
+  if(src){prev.src=src;prev.style.display='block';}else{prev.style.display='none';}
+  document.getElementById('modal-v').classList.add('open');
+}
+
+function saveVideo() {
+  var title=document.getElementById('v-title').value.trim();
+  if(!title){toast('⚠️ Adicione um título!','var(--accent)');return;}
+  var data={
+    id:editId||uid(), title:title,
+    type:document.getElementById('v-type').value,
+    status:document.getElementById('v-status').value,
+    dur:document.getElementById('v-dur').value,
+    date:document.getElementById('v-date').value,
+    views:parseInt(document.getElementById('v-views').value)||0,
+    likes:parseInt(document.getElementById('v-likes').value)||0,
+    cmts:parseInt(document.getElementById('v-cmts').value)||0,
+    link:document.getElementById('v-link').value,
+    desc:document.getElementById('v-desc').value,
+    turl:document.getElementById('v-turl').value,
+    tdata:document.getElementById('v-tdata').value,
+  };
+  if(editId){videos=videos.map(function(v){return v.id===editId?data:v;});toast('✅ Vídeo atualizado!');}
+  else{videos.unshift(data);toast('✅ Vídeo adicionado!');}
+  save();closeM('modal-v');renderVideos();
+}
+
+function delVideo(id) {
+  if(!confirm('Excluir?'))return;
+  videos=videos.filter(function(v){return v.id!==id;});
+  save();renderVideos();toast('🗑️ Removido.');
+}
+
+function handleFile(input) {
+  var file=input.files[0];if(!file)return;
+  var r=new FileReader();
+  r.onload=function(e){
+    document.getElementById('v-tdata').value=e.target.result;
+    var p=document.getElementById('thumb-prev');p.src=e.target.result;p.style.display='block';
+  };r.readAsDataURL(file);
+}
+
+var tdrop=document.getElementById('tdrop');
+tdrop.addEventListener('dragover',function(e){e.preventDefault();tdrop.style.borderColor='var(--accent)';});
+tdrop.addEventListener('dragleave',function(){tdrop.style.borderColor='';});
+tdrop.addEventListener('drop',function(e){
+  e.preventDefault();tdrop.style.borderColor='';
+  var f=e.dataTransfer.files[0];
+  if(f&&f.type.startsWith('image/')){
+    var r=new FileReader();
+    r.onload=function(ev){
+      document.getElementById('v-tdata').value=ev.target.result;
+      var p=document.getElementById('thumb-prev');p.src=ev.target.result;p.style.display='block';
+    };r.readAsDataURL(f);
+  }
+});
+
+// ═══════════════════════ ANALYTICS ════════════════════
+function renderAnalytics() {
+  var allV = ytVideosCache.length ? ytVideosCache : videos;
+  var tv   = allV.reduce(function(a,v){return a+(v.views||0);},0);
+  var tl   = allV.reduce(function(a,v){return a+(v.likes||0);},0);
+  var tc   = allV.reduce(function(a,v){return a+(v.cmts||0);},0);
+  var avg  = allV.length?Math.round(tv/allV.length):0;
+  document.getElementById('a-views').textContent=fmt(tv);
+  document.getElementById('a-likes').textContent=fmt(tl);
+  document.getElementById('a-cmts').textContent=fmt(tc);
+  document.getElementById('a-avg').textContent=fmt(avg);
+
+  var types=['short','video','live'];
+  var tnames={short:'Shorts',video:'Vídeos',live:'Lives'};
+  var tcolors={short:'var(--accent)',video:'var(--purple)',live:'var(--accent3)'};
+  var tvp=types.map(function(t){return allV.filter(function(v){return v.type===t;}).reduce(function(a,v){return a+(v.views||0);},0);});
+  var mx=Math.max(1,Math.max.apply(null,tvp));
+  document.getElementById('a-bars').innerHTML=types.map(function(t,i){
+    return '<div class="bar-row"><div class="bar-lbl">'+tnames[t]+'</div><div class="bar-track"><div class="bar-fill" style="width:'+Math.round(tvp[i]/mx*100)+'%;background:'+tcolors[t]+'"></div></div><div class="bar-val">'+fmt(tvp[i])+'</div></div>';
+  }).join('');
+
+  var counts=types.map(function(t){return allV.filter(function(v){return v.type===t;}).length;});
+  var tot=Math.max(1,counts.reduce(function(a,b){return a+b;},0));
+  var R=40,C=2*Math.PI*R;
+  var svg=document.getElementById('donut-svg');
+  svg.querySelectorAll('.arc').forEach(function(a){a.remove();});
+  var dcolors=['var(--accent)','var(--purple)','var(--accent3)'];
+  var off=0;
+  types.forEach(function(t,i){
+    var frac=counts[i]/tot,dash=frac*C;
+    var seg=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    seg.classList.add('arc');
+    seg.setAttribute('cx','55');seg.setAttribute('cy','55');seg.setAttribute('r','40');
+    seg.setAttribute('fill','none');seg.setAttribute('stroke',dcolors[i]);seg.setAttribute('stroke-width','14');
+    seg.setAttribute('stroke-dasharray',dash+' '+(C-dash));
+    seg.setAttribute('stroke-dashoffset',String(-(off-C/4)));
+    seg.setAttribute('transform','rotate(-90 55 55)');
+    svg.appendChild(seg);off+=dash;
+  });
+  document.getElementById('dlegend').innerHTML=types.map(function(t,i){
+    return '<div class="dleg-item"><div class="dleg-dot" style="background:'+dcolors[i]+'"></div>'+tnames[t]+': '+counts[i]+'</div>';
+  }).join('');
+
+  var sorted=allV.slice().sort(function(a,b){return(b.views||0)-(a.views||0);}).slice(0,10);
+  var te={short:'📱',video:'▶️',live:'🔴'};
+  document.getElementById('a-top').innerHTML=sorted.length
+    ?sorted.map(function(v,i){
+      return '<tr><td style="color:var(--muted);width:26px">'+(i+1)+'</td><td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(v.title)+'</td><td>'+(te[v.type]||'')+'</td><td>'+fmt(v.views)+'</td><td>'+fmt(v.likes)+'</td></tr>';
+    }).join('')
+    :'<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:22px">Sincronize o YouTube para ver estatísticas</td></tr>';
+}
+
+// ═══════════════════════ NOTES ════════════════════════
+function openNModal(){document.getElementById('n-title').value='';document.getElementById('n-body').value='';document.getElementById('modal-n').classList.add('open');}
+function saveNote(){
+  var t=document.getElementById('n-title').value.trim(),b=document.getElementById('n-body').value.trim();
+  if(!t&&!b){toast('⚠️ Escreva algo!','var(--accent)');return;}
+  notes.unshift({id:uid(),title:t||'Sem título',body:b,date:new Date().toLocaleDateString('pt-BR')});
+  save();closeM('modal-n');renderNotes();toast('✅ Anotação salva!');
+}
+function delNote(id){notes=notes.filter(function(n){return n.id!==id;});save();renderNotes();}
+function renderNotes(){
+  var g=document.getElementById('ngrid'),e=document.getElementById('nempty');
+  if(!notes.length){g.innerHTML='';e.style.display='block';return;}
+  e.style.display='none';
+  g.innerHTML=notes.map(function(n){
+    return '<div class="note-card"><div class="note-title">'+esc(n.title)+'</div><div class="note-body">'+esc(n.body)+'</div><div class="note-foot"><span class="note-date">📅 '+n.date+'</span><button class="btn btn-danger btn-sm" onclick="delNote(\''+n.id+'\')">🗑️</button></div></div>';
+  }).join('');
+}
+
+// ═══════════════════════ CALENDÁRIO ═══════════════════
+var calY,calM;
+function initCal(){var d=new Date();calY=d.getFullYear();calM=d.getMonth();renderCal();}
+function calPrev(){if(--calM<0){calM=11;calY--;}renderCal();}
+function calNext(){if(++calM>11){calM=0;calY++;}renderCal();}
+function renderCal(){
+  var MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var DAYS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  document.getElementById('cal-label').textContent=MONTHS[calM]+' '+calY;
+  var today=new Date(),fd=new Date(calY,calM,1).getDay(),dim=new Date(calY,calM+1,0).getDate(),prev=new Date(calY,calM,0).getDate();
+  var h=DAYS.map(function(d){return '<div class="cal-hd">'+d+'</div>';}).join('');
+  for(var i=0;i<fd;i++) h+='<div class="cal-d other">'+(prev-fd+i+1)+'</div>';
+  for(var d=1;d<=dim;d++){
+    var ds=calY+'-'+String(calM+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    var hp=posts.some(function(p){return p.date===ds;});
+    var it=today.getFullYear()===calY&&today.getMonth()===calM&&today.getDate()===d;
+    h+='<div class="cal-d'+(it?' today':'')+(hp?' hev':'')+'" onclick="document.getElementById(\'cal-date\').value=\''+ds+'\'">'+d+(hp?'<div class="cdot"></div>':'')+'</div>';
+  }
+  document.getElementById('cal-grid').innerHTML=h;
+  renderPList();
+}
+function addPost(){
+  var date=document.getElementById('cal-date').value;
+  var title=document.getElementById('cal-title').value.trim();
+  var plat=document.getElementById('cal-plat').value;
+  if(!date||!title){toast('⚠️ Preencha data e título!','var(--accent)');return;}
+  posts.push({id:uid(),date:date,title:title,plat:plat});
+  save();document.getElementById('cal-title').value='';renderCal();toast('📌 Postagem agendada!');
+}
+function delPost(id){posts=posts.filter(function(p){return p.id!==id;});save();renderCal();}
+function renderPList(){
+  var pe={'YouTube':'▶️','YouTube Shorts':'📱','TikTok':'🎵','Instagram':'📸'};
+  var sorted=posts.slice().sort(function(a,b){return a.date.localeCompare(b.date);});
+  document.getElementById('plist').innerHTML=sorted.length
+    ?sorted.map(function(p){return '<div class="post-item"><span class="post-badge">'+fmtDate(p.date)+'</span><span style="flex:1">'+esc(p.title)+'</span><span style="color:var(--muted);font-size:.78rem">'+(pe[p.plat]||'')+' '+p.plat+'</span><button class="btn btn-danger btn-sm" onclick="delPost(\''+p.id+'\')">🗑️</button></div>';}).join('')
+    :'<div style="color:var(--muted);font-size:.82rem;text-align:center;padding:16px">Nenhuma postagem agendada</div>';
+}
+
+// ═══════════════════════ CHECKLIST ════════════════════
+var CKD=[
+  {cat:'📋 Pré-Produção',items:['Definir tema/ideia','Pesquisar palavras-chave','Escrever roteiro ou tópicos','Preparar câmera, luz e microfone','Escolher local de gravação']},
+  {cat:'🎬 Gravação',items:['Testar áudio e vídeo','Gravar cenas principais','Gravar b-roll (cenas extras)','Revisar gravações na câmera','Fazer backup dos arquivos']},
+  {cat:'✂️ Edição',items:['Importar e organizar clipes','Cortar e montar o vídeo','Adicionar trilha sonora','Criar thumbnail chamativa','Adicionar legendas','Revisar o vídeo completo']},
+  {cat:'🚀 Publicação',items:['Escrever título otimizado','Criar descrição com SEO','Adicionar hashtags e tags','Definir data/hora','Compartilhar nas redes','Responder primeiros comentários']}
+];
+function renderCheck(){
+  var total=CKD.reduce(function(a,c){return a+c.items.length;},0);
+  var done=Object.values(ckSt).filter(Boolean).length;
+  var pct=total?Math.round(done/total*100):0;
+  document.getElementById('ck-bar').style.width=pct+'%';
+  document.getElementById('ck-pct').textContent=pct+'%';
+  document.getElementById('ck-container').innerHTML=CKD.map(function(c,ci){
+    var cd=c.items.filter(function(_,ii){return ckSt[ci+'-'+ii];}).length;
+    var cp=Math.round(cd/c.items.length*100);
+    return '<div class="ck-cat">'
+      +'<div class="ck-cat-h"><span>'+c.cat+'</span><span style="font-size:.74rem;color:var(--muted)">'+cd+'/'+c.items.length+'</span></div>'
+      +'<div class="ck-prog"><div class="ck-prog-fill" style="width:'+cp+'%"></div></div>'
+      +'<div class="ck-items">'
+      +c.items.map(function(item,ii){
+        var k=ci+'-'+ii,dk=ckSt[k]||false;
+        return '<div class="ck-item'+(dk?' done':'')+'" onclick="toggleCk(\''+k+'\')">'
+          +'<input type="checkbox"'+(dk?' checked':'')+'>'
+          +'<label>'+esc(item)+'</label></div>';
+      }).join('')
+      +'</div></div>';
+  }).join('');
+}
+function toggleCk(k){ckSt[k]=!ckSt[k];save();renderCheck();}
+function resetCheck(){if(!confirm('Resetar checklist?'))return;ckSt={};save();renderCheck();}
+
+// ═══════════════════════ CALCULADORA ══════════════════
+function calcRPM(){var r=parseFloat(document.getElementById('c-rev').value)||0,v=parseFloat(document.getElementById('c-vws').value)||0;document.getElementById('c-rpm').textContent=v>0?'R$ '+(r/v*1000).toFixed(2):'R$ 0,00';}
+function calcEng(){var l=parseFloat(document.getElementById('c-lks').value)||0,c=parseFloat(document.getElementById('c-cms').value)||0,v=parseFloat(document.getElementById('c-evws').value)||0;document.getElementById('c-eng').textContent=v>0?((l+c)/v*100).toFixed(2)+'%':'0,00%';}
+function calcGrow(){var s=parseFloat(document.getElementById('c-subs').value)||0,g=parseFloat(document.getElementById('c-gr').value)||0;document.getElementById('c-proj').textContent=fmt(Math.round(s*Math.pow(1+g/100,12)));}
+function calcGoal(){var g=parseFloat(document.getElementById('c-goal').value)||0,a=parseFloat(document.getElementById('c-avgv').value)||0;document.getElementById('c-need').textContent=a>0?Math.ceil(g/a)+' vídeos':'—';}
+
+// ═══════════════════════ POMODORO ═════════════════════
+var pTimer=null,pSecs=0,pTotal=0,pIsWork=true,pRunning=false,pSessions=0;
+var CIRC=2*Math.PI*75;
+function pomoReset(){
+  clearInterval(pTimer);pRunning=false;pIsWork=true;
+  var wm=parseInt(document.getElementById('p-work').value)||25;
+  pSecs=wm*60;pTotal=wm*60;
+  document.getElementById('p-btn').textContent='▶ Iniciar';
+  document.getElementById('p-lbl').textContent='🎬 FOCO — GRAVANDO';
+  document.getElementById('p-ring').style.stroke='var(--accent)';
+  document.getElementById('p-disp').className='pomo-time work';
+  updPomo();drawPDots();
+}
+function pomoToggle(){
+  if(pRunning){clearInterval(pTimer);pRunning=false;document.getElementById('p-btn').textContent='▶ Continuar';}
+  else{
+    pRunning=true;document.getElementById('p-btn').textContent='⏸ Pausar';
+    pTimer=setInterval(function(){
+      pSecs--;updPomo();
+      if(pSecs<=0){
+        clearInterval(pTimer);pRunning=false;document.getElementById('p-btn').textContent='▶ Iniciar';
+        if(pIsWork){
+          pSessions++;document.getElementById('p-cnt').textContent=pSessions;pIsWork=false;
+          var bm=parseInt(document.getElementById('p-brk').value)||5;pSecs=bm*60;pTotal=bm*60;
+          document.getElementById('p-lbl').textContent='☕ INTERVALO — Descanse!';
+          document.getElementById('p-ring').style.stroke='var(--accent3)';
+          document.getElementById('p-disp').className='pomo-time brk';toast('☕ Hora de descansar!');
+        }else{
+          pIsWork=true;var wm=parseInt(document.getElementById('p-work').value)||25;pSecs=wm*60;pTotal=wm*60;
+          document.getElementById('p-lbl').textContent='🎬 FOCO — GRAVANDO';
+          document.getElementById('p-ring').style.stroke='var(--accent)';
+          document.getElementById('p-disp').className='pomo-time work';toast('🎬 De volta ao foco!');
+        }
+        updPomo();drawPDots();
+      }
+    },1000);
+  }
+}
+function updPomo(){
+  var m=Math.floor(pSecs/60),s=pSecs%60;
+  document.getElementById('p-disp').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  var prog=pTotal>0?(pTotal-pSecs)/pTotal:0;
+  document.getElementById('p-ring').style.strokeDashoffset=String(CIRC*(1-prog));
+}
+function drawPDots(){
+  document.getElementById('p-dots').innerHTML=Array.from({length:4},function(_,i){return '<div class="pdot'+(i<pSessions?' done':'')+'"></div>';}).join('');
+}
+
+// ═══════════════════════ BOOT ═════════════════════════
+
+// Pre-load tutorial note if not already added
+(function(){
+  var already = JSON.parse(localStorage.getItem('ms_n') || '[]');
+  var hasNote = already.some(function(n){ return n.id === 'tutorial-shorts-dark'; });
+  if (!hasNote) {
+    var nota = {
+      id: 'tutorial-shorts-dark',
+      title: '🎬 Como Criar um Shorts Dark/Interessante',
+      body: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🛠️ FERRAMENTAS UTILIZADAS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🖼️ IA para gerar imagens:\n👉 https://www.piclumen.com/pt/\n\n🔊 IA para gerar vozes:\n👉 https://app.clipchamp.com\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💬 PROMPT PARA O CHATGPT\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nEu vou criar um shorts de 30 segundos, vou usar 10 imagens (Cada imagem em 3 segundos), preciso que você crie uma história de algum acontecimento aleatório do superman, e me envie como se fosse o superman falando, sem narrativas, apenas acontecimentos, quero a versão do texto em português e a versão do texto em inglês.\n\nDepois altere o prompt que irei te enviar pra gerar cada imagem, com base na sua historinha. (Preciso que você coloque todas as características em cada prompt, para ficar todos perfeitos e semelhantes, não alterando o rosto e corpo do superman, apenas alterando o acontecimento conforme a história):\n\n3D cartoon-style scene of superman, maintaining his distinct look, in a vibrant, well-lit setting. He is wearing his iconic Suit, black underpants, and football boots. Superman has short dark hair with a slight fade and a smooth, clean-shaven face. His posture is confident yet relaxed, with a calm and approachable expression. The background is dynamic, bright, and welcoming, with daylight streaming through windows, creating a lively atmosphere. The animation style is Pixar-inspired with vibrant lighting, ensuring superman character design is clear and consistent.\n\nE por fim, me envie a história que você criou completa e direta, pra eu utilizar um aplicativo pra gerar esse áudio (em inglês) e usar nas imagens, tem que ser tudo bem sincronizado.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📋 PASSO A PASSO COMPLETO\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1️⃣ Mande o prompt acima para o ChatGPT\n2️⃣ Pegue os 10 prompts de imagem gerados\n3️⃣ Cole cada prompt no Piclumen e gere as imagens\n4️⃣ Pegue o texto em inglês gerado pelo ChatGPT\n5️⃣ Cole o texto no Clipchamp e gere o áudio com voz IA\n6️⃣ Monte o vídeo: 10 imagens x 3 segundos cada = 30s\n7️⃣ Adicione o áudio sincronizado sobre as imagens\n8️⃣ Adicione música de fundo dark/épica baixinho\n9️⃣ Adicione legendas (use CapCut ou Clipchamp)\n🔟 Poste no YouTube Shorts!\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💡 DICAS PARA FICAR DARK/INTERESSANTE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n• Escolha histórias com tensão, perigo ou emoção\n• Use música épica/dramática de fundo\n• Legenda com fonte impactante (branca com borda preta)\n• Começo do vídeo tem que prender em 1 segundo\n• Hook forte: comece com algo chocante ou curioso\n• Hashtags: #superman #shorts #dc #viral #fyp',
+      date: new Date().toLocaleDateString('pt-BR')
+    };
+    already.unshift(nota);
+    localStorage.setItem('ms_n', JSON.stringify(already));
+    notes = already;
+  }
+})();
+
+renderVideos();
+initCal();
+renderCheck();
+pomoReset();
+
+// Auto-load cache if available, otherwise sync
+if (ytChannelCache) {
+  renderChannel(ytChannelCache);
+  if (ytVideosCache.length) {
+    renderYTVideos();
+    var totalLikes = ytVideosCache.reduce(function(a,v){return a+(v.likes||0);},0);
+    var totalCmts  = ytVideosCache.reduce(function(a,v){return a+(v.cmts||0);},0);
+    document.getElementById('ch-likes').textContent = fmt(totalLikes);
+    document.getElementById('ch-cmts').textContent  = fmt(totalCmts);
+    document.getElementById('sync-time').textContent = '(cache) Clique em Sincronizar para atualizar';
+  }
+} else {
+  // First load: auto sync
+  syncYT();
+}
+</script>
+</body>
+</html>
