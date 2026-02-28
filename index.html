@@ -172,14 +172,53 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .top-table td{padding:8px 0;border-top:1px solid var(--border);font-size:.82rem;vertical-align:middle}
 .top-table td:last-child{text-align:right;color:var(--accent3);font-weight:700}
 
+/* NOTE VIEWER */
+.note-viewer-body{font-size:.88rem;color:var(--text);line-height:1.9;white-space:pre-wrap}
+.note-viewer-body a{color:var(--accent2);text-decoration:none}
+.note-viewer-body a:hover{text-decoration:underline}
+.note-viewer-icon{font-size:2rem;margin-bottom:6px}
+.note-viewer-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;margin-bottom:16px;color:var(--text)}
+
 /* NOTES */
-.notes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:13px}
-.note-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color .2s}
-.note-card:hover{border-color:var(--accent2)}
-.note-title{font-weight:700;font-size:.88rem;margin-bottom:6px}
-.note-body{font-size:.8rem;color:var(--muted);line-height:1.55;white-space:pre-wrap}
-.note-foot{display:flex;align-items:center;justify-content:space-between;margin-top:11px}
-.note-date{font-size:.68rem;color:var(--muted)}
+.notes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.note-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:0;
+  transition:all .22s;
+  overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.note-card:hover{border-color:var(--accent2);transform:translateY(-2px);box-shadow:0 8px 28px rgba(255,190,11,.08)}
+.note-card-top{
+  padding:14px 16px 10px;
+  border-bottom:1px solid var(--border);
+  background:linear-gradient(135deg,var(--surface2),var(--surface));
+  display:flex;align-items:flex-start;gap:10px;
+}
+.note-icon{
+  width:34px;height:34px;border-radius:9px;
+  background:rgba(255,190,11,.13);
+  border:1px solid rgba(255,190,11,.22);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;flex-shrink:0;margin-top:1px;
+}
+.note-title{font-weight:700;font-size:.88rem;line-height:1.35;color:var(--text);flex:1}
+.note-body-wrap{padding:13px 16px;flex:1;overflow:hidden;max-height:160px;position:relative}
+.note-body-wrap::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:40px;
+  background:linear-gradient(transparent,var(--surface));
+}
+.note-body{font-size:.79rem;color:var(--muted);line-height:1.6;white-space:pre-wrap}
+.note-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 16px;
+  border-top:1px solid var(--border);
+  background:var(--surface2);
+}
+.note-date{font-size:.67rem;color:var(--muted);display:flex;align-items:center;gap:4px}
+.note-date::before{content:'📅';font-size:.65rem}
 
 /* TOOLS */
 .tools-tabs{display:flex;gap:7px;margin-bottom:22px;flex-wrap:wrap}
@@ -755,6 +794,27 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   </div>
 </div>
 
+<!-- NOTE VIEWER MODAL -->
+<div class="modal-overlay" id="modal-nview">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-header">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="note-icon" id="nview-icon" style="width:38px;height:38px;font-size:1.2rem">📝</div>
+        <h2 id="nview-title" style="font-size:1rem;line-height:1.35"></h2>
+      </div>
+      <button class="modal-close" onclick="closeM('modal-nview')">✕</button>
+    </div>
+    <div id="nview-body" class="note-viewer-body" style="max-height:65vh;overflow-y:auto;padding-right:4px"></div>
+    <div class="modal-footer" style="justify-content:space-between">
+      <span id="nview-date" style="font-size:.72rem;color:var(--muted)"></span>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost" onclick="closeM('modal-nview')">Fechar</button>
+        <button class="btn btn-danger btn-sm" id="nview-del">🗑️ Apagar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- BOTTOM NAV (mobile) -->
 <nav class="bottom-nav">
   <div class="bottom-nav-inner">
@@ -1313,12 +1373,45 @@ function saveNote(){
   save();closeM('modal-n');renderNotes();toast('✅ Anotação salva!');
 }
 function delNote(id){notes=notes.filter(function(n){return n.id!==id;});save();renderNotes();}
+function getNoteIcon(title){
+  var m=title.match(/(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/);
+  return m?m[0]:'📝';
+}
+function openNote(id){
+  var n=notes.find(function(x){return x.id===id;});
+  if(!n)return;
+  var icon=getNoteIcon(n.title);
+  var cleanTitle=n.title.replace(icon,'').trim()||n.title;
+  document.getElementById('nview-icon').textContent=icon;
+  document.getElementById('nview-title').textContent=cleanTitle;
+  document.getElementById('nview-date').textContent='📅 '+n.date;
+  var bodyHtml=esc(n.body)
+    .replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank" style="color:var(--accent2)">$1<\/a>')
+    .replace(/^(━+[^\n]*━+)$/gm,'<div style="margin:12px 0 4px;font-size:.7rem;font-weight:700;letter-spacing:.09em;color:var(--accent2)">$1<\/div>');
+  document.getElementById('nview-body').innerHTML=bodyHtml;
+  document.getElementById('nview-del').onclick=function(){
+    if(confirm('Apagar esta anotação?')){delNote(id);closeM('modal-nview');}
+  };
+  document.getElementById('modal-nview').classList.add('open');
+}
 function renderNotes(){
   var g=document.getElementById('ngrid'),e=document.getElementById('nempty');
   if(!notes.length){g.innerHTML='';e.style.display='block';return;}
   e.style.display='none';
   g.innerHTML=notes.map(function(n){
-    return '<div class="note-card"><div class="note-title">'+esc(n.title)+'</div><div class="note-body">'+esc(n.body)+'</div><div class="note-foot"><span class="note-date">📅 '+n.date+'</span><button class="btn btn-danger btn-sm" onclick="delNote(\''+n.id+'\')">🗑️</button></div></div>';
+    var icon=getNoteIcon(n.title);
+    var cleanTitle=n.title.replace(icon,'').trim()||n.title;
+    var preview=n.body.split('\n').filter(function(l){return l.trim()&&!l.match(/^━/);}).slice(0,3).join('\n');
+    return '<div class="note-card" onclick="openNote(\''+n.id+'\')">'+
+      '<div class="note-card-top">'+
+      '<div class="note-icon">'+icon+'</div>'+
+      '<div class="note-title">'+esc(cleanTitle)+'</div>'+
+      '</div>'+
+      '<div class="note-body-wrap"><div class="note-body">'+esc(preview)+'</div></div>'+
+      '<div class="note-foot">'+
+      '<span class="note-date">'+n.date+'</span>'+
+      '<span style="font-size:.72rem;color:var(--muted)">👆 clique para ver</span>'+
+      '</div></div>';
   }).join('');
 }
 
@@ -1451,18 +1544,35 @@ function drawPDots(){
 // Pre-load tutorial note if not already added
 (function(){
   var already = JSON.parse(localStorage.getItem('ms_n') || '[]');
-  var hasNote = already.some(function(n){ return n.id === 'tutorial-shorts-dark'; });
-  if (!hasNote) {
-    var nota = {
+
+  var notasParaAdicionar = [
+    {
       id: 'tutorial-shorts-dark',
       title: '🎬 Como Criar um Shorts Dark/Interessante',
-      body: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🛠️ FERRAMENTAS UTILIZADAS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🖼️ IA para gerar imagens:\n👉 https://www.piclumen.com/pt/\n\n🔊 IA para gerar vozes:\n👉 https://app.clipchamp.com\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💬 PROMPT PARA O CHATGPT\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nEu vou criar um shorts de 30 segundos, vou usar 10 imagens (Cada imagem em 3 segundos), preciso que você crie uma história de algum acontecimento aleatório do superman, e me envie como se fosse o superman falando, sem narrativas, apenas acontecimentos, quero a versão do texto em português e a versão do texto em inglês.\n\nDepois altere o prompt que irei te enviar pra gerar cada imagem, com base na sua historinha. (Preciso que você coloque todas as características em cada prompt, para ficar todos perfeitos e semelhantes, não alterando o rosto e corpo do superman, apenas alterando o acontecimento conforme a história):\n\n3D cartoon-style scene of superman, maintaining his distinct look, in a vibrant, well-lit setting. He is wearing his iconic Suit, black underpants, and football boots. Superman has short dark hair with a slight fade and a smooth, clean-shaven face. His posture is confident yet relaxed, with a calm and approachable expression. The background is dynamic, bright, and welcoming, with daylight streaming through windows, creating a lively atmosphere. The animation style is Pixar-inspired with vibrant lighting, ensuring superman character design is clear and consistent.\n\nE por fim, me envie a história que você criou completa e direta, pra eu utilizar um aplicativo pra gerar esse áudio (em inglês) e usar nas imagens, tem que ser tudo bem sincronizado.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📋 PASSO A PASSO COMPLETO\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1️⃣ Mande o prompt acima para o ChatGPT\n2️⃣ Pegue os 10 prompts de imagem gerados\n3️⃣ Cole cada prompt no Piclumen e gere as imagens\n4️⃣ Pegue o texto em inglês gerado pelo ChatGPT\n5️⃣ Cole o texto no Clipchamp e gere o áudio com voz IA\n6️⃣ Monte o vídeo: 10 imagens x 3 segundos cada = 30s\n7️⃣ Adicione o áudio sincronizado sobre as imagens\n8️⃣ Adicione música de fundo dark/épica baixinho\n9️⃣ Adicione legendas (use CapCut ou Clipchamp)\n🔟 Poste no YouTube Shorts!\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💡 DICAS PARA FICAR DARK/INTERESSANTE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n• Escolha histórias com tensão, perigo ou emoção\n• Use música épica/dramática de fundo\n• Legenda com fonte impactante (branca com borda preta)\n• Começo do vídeo tem que prender em 1 segundo\n• Hook forte: comece com algo chocante ou curioso\n• Hashtags: #superman #shorts #dc #viral #fyp',
-      date: new Date().toLocaleDateString('pt-BR')
-    };
-    already.unshift(nota);
-    localStorage.setItem('ms_n', JSON.stringify(already));
-    notes = already;
-  }
+      body: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🛠️ FERRAMENTAS UTILIZADAS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🖼️ IA para gerar imagens:\n👉 https://www.piclumen.com/pt/\n\n🔊 IA para gerar vozes:\n👉 https://app.clipchamp.com\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💬 PROMPT PARA O CHATGPT\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nEu vou criar um shorts de 30 segundos, vou usar 10 imagens (Cada imagem em 3 segundos), preciso que você crie uma história de algum acontecimento aleatório do superman, e me envie como se fosse o superman falando, sem narrativas, apenas acontecimentos, quero a versão do texto em português e a versão do texto em inglês.\n\nDepois altere o prompt que irei te enviar pra gerar cada imagem, com base na sua historinha. (Preciso que você coloque todas as características em cada prompt, para ficar todos perfeitos e semelhantes, não alterando o rosto e corpo do superman, apenas alterando o acontecimento conforme a história):\n\n3D cartoon-style scene of superman, maintaining his distinct look, in a vibrant, well-lit setting. He is wearing his iconic Suit, black underpants, and football boots. Superman has short dark hair with a slight fade and a smooth, clean-shaven face. His posture is confident yet relaxed, with a calm and approachable expression. The background is dynamic, bright, and welcoming, with daylight streaming through windows, creating a lively atmosphere. The animation style is Pixar-inspired with vibrant lighting, ensuring superman character design is clear and consistent.\n\nE por fim, me envie a história que você criou completa e direta, pra eu utilizar um aplicativo pra gerar esse áudio (em inglês) e usar nas imagens, tem que ser tudo bem sincronizado.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📋 PASSO A PASSO COMPLETO\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1️⃣ Mande o prompt acima para o ChatGPT\n2️⃣ Pegue os 10 prompts de imagem gerados\n3️⃣ Cole cada prompt no Piclumen e gere as imagens\n4️⃣ Pegue o texto em inglês gerado pelo ChatGPT\n5️⃣ Cole o texto no Clipchamp e gere o áudio com voz IA\n6️⃣ Monte o vídeo: 10 imagens x 3 segundos cada = 30s\n7️⃣ Adicione o áudio sincronizado sobre as imagens\n8️⃣ Adicione música de fundo dark/épica baixinho\n9️⃣ Adicione legendas (use CapCut ou Clipchamp)\n🔟 Poste no YouTube Shorts!\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💡 DICAS PARA FICAR DARK/INTERESSANTE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n• Escolha histórias com tensão, perigo ou emoção\n• Use música épica/dramática de fundo\n• Legenda com fonte impactante (branca com borda preta)\n• Começo do vídeo tem que prender em 1 segundo\n• Hook forte: comece com algo chocante ou curioso\n• Hashtags: #superman #shorts #dc #viral #fyp'
+    },
+    {
+      id: 'tutorial-viralizar-shorts',
+      title: '🚀 Como Viralizar no YouTube Shorts',
+      body: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📱 COMO POSTAR CORRETAMENTE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n✅ Poste sempre pelo APP do YouTube no celular\n   ou pelo YouTube Studio\n❌ Nunca poste pelo navegador/desktop Chrome\n   (não deixa escolher thumbnail nem música)\n\n⚠️ Atualize o app antes de postar sempre!\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🎵 MÚSICA VIRAL\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n• Adicione uma música viral mesmo em volume ZERO\n• O algoritmo prioriza Shorts com trilha popular\n• Você pode ajustar o volume depois\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🖼️ THUMBNAIL E TÍTULO\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n• Escolha um take visualmente chamativo como capa\n• As 3 primeiras palavras do título devem ser IMPACTANTES\n• Use CAIXA ALTA nas palavras principais\n• Título forte = mais cliques = mais entrega do algoritmo\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n#️⃣ HASHTAGS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n• Use poucas hashtags (não exagere!)\n• Excesso = marcado como SPAM pelo YouTube\n• Use sempre: #shorts\n• Adicione 2~3 hashtags do nicho\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🔒 PRIVADO ANTES DE PUBLICAR\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n• Poste como PRIVADO ou NÃO LISTADO\n• Aguarde 20 a 30 minutos\n• Depois mude para PÚBLICO\n• Isso garante que o YouTube processe em alta qualidade\n• Sem isso: vídeo pixelado = menos engajamento\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📝 DESCRIÇÃO E SEO\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n• Comece com 1 frase curta resumindo o vídeo\n• Adicione 5~6 palavras-chave separadas por vírgula\n• Use a ferramenta QUILL para gerar palavras-chave com IA\n• Use algumas palavras-chave também como TAGS\n\n⚙️ CONFIGURAÇÕES AVANÇADAS:\n• Desmarque "mostrar número de likes" no início\n• Ative a caixa de REMIX (outros criadores divulgam seu conteúdo)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🕐 MELHOR HORÁRIO PARA POSTAR\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n✅ Horários recomendados para iniciantes:\n   7h | 9h | 22h\n\n❌ Evite: meio-dia até às 18h\n   (muito volume de uploads = algoritmo saturado)\n\n• Mantenha frequência e consistência!\n• Com o tempo o desempenho aumenta naturalmente'
+    },
+    {
+      id: 'ferramentas-edicao-ia',
+      title: '🛠️ Ferramentas de Edição com IA',
+      body: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n✂️ REMOVER MARCA D\'ÁGUA\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🔗 https://ezremove.ai/video-watermark-remover/\n\n• Remove marca d\'água de vídeos automaticamente\n• Grátis e direto no navegador\n• Ideal para usar antes de postar\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💬 LEGENDAS AUTOMÁTICAS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🔗 https://app.submagic.co/\n\n• Gera legendas automáticas com IA\n• Fonte estilizada pronta para Shorts\n• Aumenta retenção e acessibilidade\n• Muito usado por criadores virais'
+    }
+  ];
+
+  notasParaAdicionar.forEach(function(nota) {
+    var existe = already.some(function(n){ return n.id === nota.id; });
+    if (!existe) {
+      nota.date = new Date().toLocaleDateString('pt-BR');
+      already.unshift(nota);
+    }
+  });
+
+  localStorage.setItem('ms_n', JSON.stringify(already));
+  notes = already;
 })();
 
 renderVideos();
